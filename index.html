@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador Exacto de Resoluciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12);
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+        .search-container {
+            max-width: 100%;
+            margin: 0 auto 30px;
+        }
+        .logo-container {
+        height: 90px;
+        margin-bottom: 15px;
+    }
+        .logo-title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+    }
+    
+    .logo-container img {
+        height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .logo-container img {
+        height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .title-container h1 {
+        margin: 0;
+        text-align: center;
+    }
+        .search-header {
+            text-align: center;
+            position: relative;
+            flex-grow: 1;
+            min-width: 300px;
+        }
+        .search-filters {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            min-width: 250px;
+            text-align: center;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        #searchTerm {
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            border: 2px solid #fff;
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        #searchType, #yearFilter {
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            border: 2px solid #fff;
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+        option {
+            background-color: #004d7a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th {
+            background-color: rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+        }
+        tr:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        .pdf-link {
+            color: #006400;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .pdf-link:hover {
+            text-decoration: underline;
+            color: #004d00;
+        }
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(255,0,0,0.2);
+            border-left: 4px solid red;
+            margin-top: 20px;
+            display: none;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+        .logo-container {
+            height: 70px;
+            }
+            .search-filters {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            .filter-group {
+                width: 100%;
+                max-width: 300px;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        /* Estilos para el modal de contraseña */
+        .password-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .password-modal {
+            background: linear-gradient(145deg, #004d7a, #008793);
+            padding: 40px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: modalFadeIn 0.4s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .password-modal h2 {
+            margin-top: 0;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .password-input:focus {
+            border-color: #00bf72;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .password-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .password-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        
+        .password-submit {
+            background-color: #00bf72;
+            color: white;
+        }
+        
+        .password-submit:hover {
+            background-color: #00995d;
+            transform: translateY(-2px);
+        }
+        
+        .password-error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            display: none;
+            font-weight: bold;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Ocultar contenido principal hasta autenticación */
+        .main-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de contraseña -->
+    <div id="passwordModal" class="password-modal-overlay">
+        <div class="password-modal">
+            <h2>Planeamiento Educativo</h2>
+            <input type="password" id="passwordInput" class="password-input" placeholder="Ingrese la clave de acceso">
+            <p id="passwordError" class="password-error">Clave incorrecta. Intente nuevamente.</p>
+            <button id="submitPasswordBtn" class="password-btn password-submit">Ingresar</button>
+        </div>
+    </div>
+    
+    <!-- Contenido principal (oculto inicialmente) -->
+    <div class="main-content">
+        <div class="header-container">
+            <div class="logo-title-container">
+                <div class="logo-container">
+                    <img src="https://i.postimg.cc/PxbJyLWD/Logo-Secretaria-de-Planeamiento-Educativo-y-Desarrollo-Profesional-Docente.png" alt="Logo Secretaría">
+                </div>
+                <div class="title-container">
+                    <h1>Resoluciones de la Secretaría de Planeamiento Educativo</h1>
+                    <h2>. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .</h2>
+                </div>
+            </div>
+        </div>
+            
+        <div class="search-container">
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label for="searchType">Tipo de Búsqueda</label>
+                    <select id="searchType" onchange="updatePlaceholder()">
+                        <option value="all">Búsqueda General</option>
+                        <option value="resolucion">Por Resolución</option>
+                        <option value="tema">Por Tema</option>
+                        <option value="expediente">Por Expediente</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="searchTerm">Término de Búsqueda</label>
+                    <input type="text" id="searchTerm" placeholder="Buscar..." onkeyup="searchData()">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="yearFilter">Filtrar por Año</label>
+                    <select id="yearFilter" onchange="searchData()">
+                        <option value="all">Todos los años</option>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="noResults" class="no-results">No se encontraron resultados para su búsqueda.</div>
+
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Resolución</th>
+                        <th>Código</th>
+                        <th>Expediente</th>
+                        <th>Tema de Carátula</th>
+                        <th>Documento</th>
+                        <th>Año</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Los datos se cargarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="data.json"></script>
+    <script src="script.js"></script>
+</body>
+</html>
